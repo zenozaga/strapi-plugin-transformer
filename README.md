@@ -40,8 +40,24 @@ module.exports = ({ env }) => ({
     config: {
       prefix: '/api/',
       responseTransforms: {
-        removeAttributesKey: true,
-        removeDataKey: true,
+        keys:["data.attributes"]
+      }
+    }
+  },
+  // ..
+});
+
+//or
+
+
+module.exports = ({ env }) => ({
+  // ..
+ 'transformer': {
+    enabled: true,
+    config: {
+      prefix: '/api/',
+      responseTransforms: {
+        keys:["data","attributes"]
       }
     }
   },
