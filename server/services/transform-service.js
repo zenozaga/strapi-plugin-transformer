@@ -3,93 +3,50 @@
 const _ = require('lodash');
 const { removeObjectKey } = require('../util/removeObjectKey');
 
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} keys 
+ * @returns {object} transformed data
+ * 
+ */
+function traverse(data, keys = []){
+
+	if(keys && keys.length && Object.keys(data).length && typeof data == 'object'){
+
+		for (let index = 0; index < keys.length; index++) {
+
+			if (_.has(data,keys[index])) {
+				return traverse(removeObjectKey(data, keys[index]), keys);
+			}	
+		}
+		
+		// match keys in Array
+		if(_.isArray(data)) return data.map(item => traverse(item, keys));
+		
+		// match keys in Object
+		if(_.isObject(data)) return Object.keys(data).reduce((acc, key) => {
+			acc[key] = traverse(data[key], keys);
+			return acc;
+		}, {});
+	}
+
+ 	return data;		
+}
+
 module.exports = () => ({
+
 	/**
 	 *
 	 * @param {object} transforms
-	 * @param {boolean} transforms.removeAttributesKey
-	 * @param {boolean} transforms.removeDataKey
 	 * @param {object} data
 	 * @returns {object} transformed data
 	 */
-	transformResponse: function traverse(transforms, data) {
-		// removeAttributeKey specific transformations
-		if (transforms.removeAttributesKey) {
-			// single
-			if (_.has(data, 'attributes')) {
-				return traverse(transforms, removeObjectKey(data, 'attributes'));
-			}
-
-			// collection
-			if (_.isArray(data) && data.length && _.has(_.head(data), 'attributes')) {
-				return data.map((e) => traverse(transforms, e));
-			}
-		}
-
-		// fields
-		_.forEach(data, (value, key) => {
-			if (!value) {
-				return;
-			}
-
-			// removeDataKey specific transformations
-			if (transforms.removeDataKey) {
-				// single
-				if (_.isObject(value)) {
-					data[key] = traverse(transforms, value);
-				}
-
-				// many
-				if (_.isArray(value)) {
-					data[key] = value.map((field) => traverse(transforms, field));
-				}
-			}
-
-			// relation(s)
-			if (_.has(value, 'data')) {
-				let relation = null;
-				// single
-				if (_.isObject(value.data)) {
-					relation = traverse(transforms, value.data);
-				}
-
-				// many
-				if (_.isArray(value.data)) {
-					relation = value.data.map((e) => traverse(transforms, e));
-				}
-
-				if (transforms.removeDataKey) {
-					data[key] = relation;
-				} else {
-					data[key]['data'] = relation;
-				}
-			}
-
-			// single component
-			if (_.has(value, 'id')) {
-				data[key] = traverse(transforms, value);
-			}
-
-			// repeatable component & dynamic zone
-			if (_.isArray(value) && _.has(_.head(value), 'id')) {
-				data[key] = value.map((p) => traverse(transforms, p));
-			}
-
-			// single media
-			if (_.has(value, 'provider')) {
-				return;
-			}
-
-			// multi media
-			if (_.isArray(value) && _.has(_.head(value), 'provider')) {
-				return;
-			}
-		});
-
-		return data;
-	},
+	transformResponse: (transform, data) => traverse(data, transform.keys),
 
 	response(settings, data) {
+		
 		if (settings && settings.responseTransforms) {
 			data = this.transformResponse(settings.responseTransforms, data);
 		}

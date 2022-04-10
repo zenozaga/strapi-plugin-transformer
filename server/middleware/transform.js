@@ -1,7 +1,7 @@
 'use strict';
 
 const { getPluginService } = require('../util/getPluginService');
-const { isAPIRequest } = require('../util/isAPIRequest');
+const { isMatch } = require('../util/isMatch');
 
 const transform = async (strapi, ctx, next) => {
 	const settings = getPluginService('settingsService').get();
@@ -14,7 +14,7 @@ const transform = async (strapi, ctx, next) => {
 	}
 
 	// only process api requests.
-	if (isAPIRequest(ctx, settings.prefix)) {
+	if (isMatch(ctx, settings.prefix)) {
 		const { data } = ctx.body;
 
 		// ensure no error returned.
