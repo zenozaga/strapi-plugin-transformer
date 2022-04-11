@@ -13,14 +13,12 @@ const transform = async (strapi, ctx, next) => {
 		return;
 	}
 
-	// only process api requests.
+	// only matches process  requests.
 	if (isMatch(ctx, settings.prefix)) {
-		const { data } = ctx.body;
-
-		// ensure no error returned.
-		if (data) {
-			ctx.body['data'] = getPluginService('transformService').response(settings, data);
-		}
+		let data = ctx.body.data || ctx.body;
+		ctx.body = {
+			data: getPluginService('transformService').response(settings, data)
+		};
 	}
 };
 

@@ -47,7 +47,9 @@ module.exports = () => ({
 
 	response(settings, data) {
 		
+		
 		if (settings && settings.responseTransforms) {
+			if(typeof data == 'string') try { data = JSON.parse(data); } catch (error) { }
 			data = this.transformResponse(settings.responseTransforms, data);
 		}
 
