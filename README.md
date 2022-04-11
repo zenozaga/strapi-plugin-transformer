@@ -33,22 +33,6 @@ The plugin configuration is stored in a config file located at `./config/plugins
 A sample configuration
 
 ```javascript
-module.exports = ({ env }) => ({
-  // ..
- 'transformer': {
-    enabled: true,
-    config: {
-      prefix: '/api/',
-      responseTransforms: {
-        keys:["data.attributes","attributes"]
-      }
-    }
-  },
-  // ..
-});
-
-//or
-
 
 module.exports = ({ env }) => ({
   // ..
