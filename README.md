@@ -40,7 +40,7 @@ module.exports = ({ env }) => ({
     config: {
       prefix: '/api/',
       responseTransforms: {
-        keys:["data.attributes"]
+        keys:["data.attributes","attributes"]
       }
     }
   },

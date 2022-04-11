@@ -16,24 +16,22 @@ const removeObjectKey = (object, key) => {
 	
 	if(object && key && _.isObject(object)){
 
+		var _new = {
+			...object,
+			..._.get(object,key)
+		};
+
 		if(_.has(object, key) && !Object.hasOwnProperty.call(object, key)){
-
-			var _new = {
-				...object,
-				..._.get(object,key)
-			};
-
+			
 			delete _new[key.split('.')[0]];
- 
-			return _new;
 
-		}else if(_.has(object, key)){
+		}else if(Object.hasOwnProperty.call(object, key)){
 
-			return {
-				..._.get(object,key)
-			};
+			delete _new[key];
 
 		}
+
+		return _new;
 		
  	}
 	
